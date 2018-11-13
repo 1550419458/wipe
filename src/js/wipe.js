@@ -21,52 +21,54 @@ function drawMask(context){
 }
 
 // 在画布上画半径为30的圆
-function drawPoint(context){
-	console.log("传递的实参个数：" + arguments.length);
-	context.save();
-	context.beginPath();
-	context.arc(moveX,moveY,radius,0,2*Math.PI);
-	context.fillStyle = "rgba(255,0,0,255)";
-	context.fill();
-	context.restore();
-}
-
-function drawLine(context,x1,y1,x2,y2){
-	console.log("传递的实参个数：" + arguments.length);
-	// 保存当前绘图状态
-	context.save();
-	// 以原点为起点，绘制一条线
-	context.beginPath();
-	context.moveTo(x1,y1);
-	context.lineTo(x2,y2);
-	// 增加一些样式，加宽线条
-	context.lineWidth = radius*2;
-	// 连接点改成圆角效果
-	context.lineCap = "round";
-	context.stroke();
-	// 恢复原有绘图状态
-	context.restore();
-}
-
-// function drawZio(context,x1,y1,x2,y2){
+// function drawPoint(context){
 // 	console.log("传递的实参个数：" + arguments.length);
 // 	context.save();
 // 	context.beginPath();
-// 	if(arguments.length === 3){
-// 		context.arc(moveX,moveY,radius,0,2*Math.PI);
-// 		context.fillStyle = "rgba(255,0,0,255)";
-// 		context.fill();
-// 	}else if(arguments.length === 5){
-// 		context.moveTo(x1,y1);
-// 		context.lineTo(x2,y2);
-// 		// 增加一些样式，加宽线条
-// 		context.lineWidth = radius*2;
-// 		// 连接点改成圆角效果
-// 		context.lineCap = "round";
-// 		context.stroke();
-// 	}
+// 	context.arc(moveX,moveY,radius,0,2*Math.PI);
+// 	context.fillStyle = "rgba(255,0,0,255)";
+// 	context.fill();
 // 	context.restore();
 // }
+
+// function drawLine(context,x1,y1,x2,y2){
+// 	console.log("传递的实参个数：" + arguments.length);
+// 	// 保存当前绘图状态
+// 	context.save();
+// 	// 以原点为起点，绘制一条线
+// 	context.beginPath();
+// 	context.moveTo(x1,y1);
+// 	context.lineTo(x2,y2);
+// 	// 增加一些样式，加宽线条
+// 	context.lineWidth = radius*2;
+// 	// 连接点改成圆角效果
+// 	context.lineCap = "round";
+// 	context.stroke();
+// 	// 恢复原有绘图状态
+// 	context.restore();
+// }
+
+function drawZio(context,x1,y1,x2,y2){
+	console.log("传递的实参个数：" + arguments.length);
+	context.save();
+	context.beginPath();
+	if(arguments.length === 3){
+		context.arc(x1,y1,radius,0,2*Math.PI);
+		context.fillStyle = "rgba(255,0,0,255)";
+		context.fill();
+	}else if(arguments.length === 5){
+		context.moveTo(x1,y1);
+		context.lineTo(x2,y2);
+		// 增加一些样式，加宽线条
+		context.lineWidth = radius*2;
+		// 连接点改成圆角效果
+		context.lineCap = "round";
+		context.stroke();
+	}else{
+		return false;
+	}
+	context.restore();
+}
 
 canvas.addEventListener(down,function(evt){
 	var event = evt || window.event;
@@ -79,8 +81,8 @@ canvas.addEventListener(down,function(evt){
 	// }
 	moveX = device?event.touches[0].clientX:event.clientX;
 	moveY = device?event.touches[0].clientY:event.clientY;
-	drawPoint(context,moveX,moveY);
-	// drawZio(context,moveX,moveY);
+	// drawPoint(context,moveX,moveY);
+	drawZio(context,moveX,moveY);
 	isMouseDown = true;
 },false);
 
@@ -125,8 +127,8 @@ function fn1(evt){
 		// }
 		x2 = device?event.touches[0].clientX:event.clientX;
 		y2 = device?event.touches[0].clientY:event.clientY;
-		drawLine(context,moveX,moveY,x2,y2);
-		// drawZio(context,moveX,moveY,x2,y2);
+		// drawLine(context,moveX,moveY,x2,y2);
+		drawZio(context,moveX,moveY,x2,y2);
 		moveX = x2;
 		moveY = y2;
 	}
