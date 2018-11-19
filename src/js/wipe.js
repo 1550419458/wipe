@@ -1,176 +1,75 @@
-// 获取canvas上下文
-var canvas = document.getElementById("cas");
-var context = canvas.getContext("2d");
-var _w = canvas.width,_h = canvas.height,t=0;
-var radius = 20;	//涂抹的半径
-var moveX;
-var moveY;
-var isMouseDown = false;	//表示鼠标的状态，是否按下，默认为未按下false
-// device保存设备类型，如果是移动端则为true，PC端为false
-var device = (/android|webos|iPhone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
-console.log(device);
-var down = device?"touchstart":"mousedown";
-var move = device?"touchmove":"mousemove";
-var up = device?"touchend":"mouseup";
-
-// 生成画布上的遮罩，默认为颜色#666
-function drawMask(context){
-	context.fillStyle = "#666";
-	context.fillRect(0,0,_w,_h);
-	context.globalCompositeOperation = "destination-out";
+/*
+author: yas
+data：	2018-11-19
+email:
+*/
+function Wipe(obj){
+	this.conID = obj.id;
+	this.canvas = document.getElementById(this.conID);
+	this.context = this.canvas.getContext("2d");
+	this._w = this.canvas.width;
+	this._h = this.canvas.height;
+	this.coverType = obj.coverType;
+	this.color = obj.color || "#666";
+	this.imgUrl = obj.imgUrl;
+	this.backImgUrl = obj.backImgUrl;
+	this.radius = obj.radius;
+	this.moveX = 0;
+	this.moveY = 0;
+	this.isMouseDown = false;
+	this.callback = obj.callback;
+	this.transpercent = obj.transpercent;
+	this.drawMask();
+	this.drawMove();
 }
-
-// 在画布上画半径为30的圆
-// function drawPoint(context){
-// 	console.log("传递的实参个数：" + arguments.length);
-// 	context.save();
-// 	context.beginPath();
-// 	context.arc(moveX,moveY,radius,0,2*Math.PI);
-// 	context.fillStyle = "rgba(255,0,0,255)";
-// 	context.fill();
-// 	context.restore();
-// }
-
-// function drawLine(context,x1,y1,x2,y2){
-// 	console.log("传递的实参个数：" + arguments.length);
-// 	// 保存当前绘图状态
-// 	context.save();
-// 	// 以原点为起点，绘制一条线
-// 	context.beginPath();
-// 	context.moveTo(x1,y1);
-// 	context.lineTo(x2,y2);
-// 	// 增加一些样式，加宽线条
-// 	context.lineWidth = radius*2;
-// 	// 连接点改成圆角效果
-// 	context.lineCap = "round";
-// 	context.stroke();
-// 	// 恢复原有绘图状态
-// 	context.restore();
-// }
-
-function drawZio(context,x1,y1,x2,y2){
-	console.log("传递的实参个数：" + arguments.length);
-	context.save();
-	context.beginPath();
-	if(arguments.length === 3){
-		context.arc(x1,y1,radius,0,2*Math.PI);
-		context.fillStyle = "rgba(255,0,0,255)";
-		context.fill();
-	}else if(arguments.length === 5){
-		context.moveTo(x1,y1);
-		context.lineTo(x2,y2);
-		// 增加一些样式，加宽线条
-		context.lineWidth = radius*2;
-		// 连接点改成圆角效果
-		context.lineCap = "round";
-		context.stroke();
+//drawT()画点和画线函数
+//参数：如果只有两个参数，函数功能画圆，x1,y1即圆的中心坐标 
+//如果传递四个参数，函数功能画线，x1,y1为起始坐标，x2,y2为结束坐标
+Wipe.prototype.drawZio = function(x1,y1,x2,y2){
+	if(arguments.length === 2){
+		this.context.save();
+		this.context.beginPath();
+		this.context.arc(x1,y1,this.radius,0,2*Math.PI);
+		this.context.fillStyle = "rgba(255,0,0,255)";
+		this.context.fill();
+		this.context.restore();
+	}else if(arguments.length === 4){
+		this.context.save();
+		this.context.beginPath();
+		this.context.moveTo(x1,y1);
+		this.context.lineTo(x2,y2);
+		this.context.lineWidth = this.radius*2;
+		this.context.lineCap = "round";
+		this.context.stroke();
+		this.context.restore();
 	}else{
 		return false;
 	}
-	context.restore();
 }
 
-canvas.addEventListener(down,function(evt){
-	var event = evt || window.event;
-	// if(device === true){
-	// 	moveX = event.touches[0].clientX;
-	// 	moveY = event.touches[0].clientY;
-	// }else{
-	// 	moveX = event.clientX;
-	// 	moveY = event.clientY;
-	// }
-	moveX = device?event.touches[0].clientX:event.clientX;
-	moveY = device?event.touches[0].clientY:event.clientY;
-	// drawPoint(context,moveX,moveY);
-	drawZio(context,moveX,moveY);
-	isMouseDown = true;
-},false);
-
-// 在画布上监听自定义事件“mousedown”，调用drawPoint函数
-// canvas.addEventListener("mousedown",function(evt){
-// 	var event = evt || window.event;
-// 	// 获取鼠标在视口的坐标，传递参数到drawPoint
-// 	moveX = event.clientX;
-// 	moveY = event.clientY;
-
-// 	drawPoint(context,moveX,moveY);
-// 	isMouseDown = true;
-// },false);
-
-// canvas.addEventListener("touchstart",function(evt){
-// 	var event = evt || window.event;
-// 	// 获取手指在视口的坐标，传递参数到drawPoint
-// 	moveX = event.touches[0].clientX;
-// 	moveY = event.touches[0].clientY;
-
-// 	drawPoint(context,moveX,moveY);
-// 	isMouseDown = true;
-// },false);
-
-// canvas.addEventListener("touchmove",fn2,false);
-
-
-// canvas.addEventListener("mousemove",fn1,false);
-
-canvas.addEventListener(move,fn1,false);
-
-function fn1(evt){
-	var event = evt || window.event;
-	event.preventDefault();
-	if(isMouseDown === true){
-		// if(device === true){
-		// 	var x2 = event.touches[0].clientX;
-		// 	var y2 = event.touches[0].clientY;
-		// }else{
-		// 	var x2 = event.clientX;
-		// 	var y2 = event.clientY;
-		// }
-		x2 = device?event.touches[0].clientX:event.clientX;
-		y2 = device?event.touches[0].clientY:event.clientY;
-		// drawLine(context,moveX,moveY,x2,y2);
-		drawZio(context,moveX,moveY,x2,y2);
-		moveX = x2;
-		moveY = y2;
+Wipe.prototype.drawMask = function(){
+	if(this.coverType === "color"){
+		this.context.fillStyle = this.color;
+		this.context.fillRect(0,0,this._w,this._h);
+		this.context.globalCompositeOperation = "destination-out";
+	}else if(this.coverType === "image" ){
+		var img = new Image();
+		var that = this;
+		img.src = this.imgUrl;
+		img.onload = function(){
+			that.context.drawImage(img,0,0,img.width,img.height,0,0,that._w,that._h);
+			that.context.globalCompositeOperation="destination-out";
+		}
 	}
 }
 
-// function fn2(evt){
-// 	if(!isMouseDown){
-// 		return false;
-// 	}else{
-// 		var event = evt || window.event;
-// 		event.preventDefault();
-// 		var x2 = event.touches[0].clientX;
-// 		var y2 = event.touches[0].clientY;
-// 		drawLine(context,moveX,moveY,x2,y2);
-// 		moveX = x2;
-// 		moveY = y2;
-// 	}
-// }
-
-// canvas.addEventListener("touchend",function(evt){
-// 	isMouseDown = false;
-// 	if(getTransparencyPercent(context) > 50){
-// 		alert("超过50%");
-// 		clearRect(context);
-// 	}
-// },false);
-
-canvas.addEventListener(up,function(){
-	// canvas.removeEventListener("mousemove",fn1,false);
-	isMouseDown = false;
-	if(getTransparencyPercent(context) > 50){
-		alert("超过50%");
-		clearRect(context);
-	}
-},false);
-
-function clearRect(context){
-	context.clearRect(0,0,_w,_h);
+Wipe.prototype.clearRect = function(){
+	this.context.clearRect(0,0,this._w,this._h);
 }
 
-function getTransparencyPercent(context){
-	var imgData = context.getImageData(0,0,_w,_h);
+Wipe.prototype.getTransparencyPercent = function(){
+	var t = 0;
+	var imgData = this.context.getImageData(0,0,this._w,this._h);
 	for(var i=0; i<imgData.data.length; i+=4){
 		var a = imgData.data[i+3];
 		if(a === 0){
@@ -178,13 +77,61 @@ function getTransparencyPercent(context){
 		}
 	}
 
-	var percent = (t / (_w*_h))*100;
+	this.percent = (t / (this._w*this._h))*100;
 	console.log("透明点的个数：" + t);
-	console.log("占总面积：" + Math.ceil(percent) + "%");
-	// return percent.toFixed(2);	//截取小数点两位
-	return Math.round(percent);
+	console.log("占总面积" + Math.ceil(this.percent) + "%");
+	return Math.round(this.percent);
 }
 
-window.onload = function(){
-	drawMask(context);
-};
+
+Wipe.prototype.drawMove = function(){
+	this.device = (/android|webos|iPhone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
+	console.log(this.device);
+	var down = this.device?"touchstart":"mousedown";
+	var move = this.device?"touchmove":"mousemove";
+	var up = this.device?"touchend":"mouseup";
+	var	allTop = this.canvas.offsetTop;
+	var allLeft = this.canvas.offsetLeft;
+	var scrollTop;
+	var scrollLeft;
+	var tobj = this.canvas;
+	while(tobj = tobj.offsetParent){
+		allTop += tobj.offsetTop;
+		allLeft += tobj.offsetLeft;
+	}
+	var that = this;
+	this.canvas.addEventListener(down,function(evt){
+		var event = evt || window.event;
+		scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+		scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+		that.moveX = that.device?event.touches[0].clientX - allLeft + scrollLeft :event.clientX - allLeft + scrollLeft;
+		that.moveY = that.device?event.touches[0].clientY - allTop + scrollTop :event.clientY - allTop + scrollTop;
+		that.drawZio(that.moveX,that.moveY);
+		that.isMouseDown = true;
+	},false);
+
+	this.canvas.addEventListener(move,function(evt){
+		if(!that.isMouseDown){
+			return false;
+		}else{
+			var event = evt || window.event;
+			event.preventDefault();
+			scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+			scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+			var x2 = that.device?event.touches[0].clientX - allLeft + scrollLeft :event.clientX - allLeft + scrollLeft;
+			var y2 = that.device?event.touches[0].clientY - allTop + scrollTop :event.clientY - allTop + scrollTop;
+			that.drawZio(that.moveX,that.moveY,x2,y2);
+			that.moveX = x2;
+			that.moveY = y2;
+		}
+	},false);
+
+	this.canvas.addEventListener(up,function(){
+		that.isMouseDown = false;
+		var percent = that.getTransparencyPercent();
+		that.callback.call(null,percent);	//等同于null
+		if(percent > that.transpercent){
+			that.clearRect();
+		}
+	},false);
+}
