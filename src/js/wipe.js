@@ -126,12 +126,16 @@ Wipe.prototype.drawMove = function(){
 		}
 	},false);
 
+	var percent;
 	this.canvas.addEventListener(up,function(){
 		that.isMouseDown = false;
-		var percent = that.getTransparencyPercent();
-		that.callback.call(null,percent);	//等同于null
-		if(percent > that.transpercent){
-			that.clearRect();
+		var tha = that;
+		setTimeout(function(){
+			percent = tha.getTransparencyPercent();
+		},500);
+		tha.callback.call(null,percent);	//等同于null
+		if(percent > tha.transpercent){
+			tha.clearRect();
 		}
 	},false);
 }
