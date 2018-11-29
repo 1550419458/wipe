@@ -133,6 +133,7 @@ Wipe.prototype.drawMove = function(){
 		setTimeout(function(){
 			percent = tha.getTransparencyPercent();
 		},500);
+		clearTimeout();
 		tha.callback.call(null,percent);	//等同于null
 		if(percent > tha.transpercent){
 			tha.clearRect();
